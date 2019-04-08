@@ -1,0 +1,6 @@
+{
+    "max_epoch": 13,
+    "model_checkpoint_period": 5,
+    "snapshot_period": 5,
+    "evaluation_period": 2
+}

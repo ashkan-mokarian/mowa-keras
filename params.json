@@ -1,0 +1,10 @@
+{
+    "max_epoch": 1000,
+    "model_checkpoint_period": 100,
+    "snapshot_period": 100,
+    "evaluation_period": 20,
+
+    "initializer_worm": "/home/ashkan/workspace/myCode/MoWA/mowa-keras/data/train/mir61L1_1228061.hdf",
+
+    "random_seed": 123
+}
