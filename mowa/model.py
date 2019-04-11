@@ -54,7 +54,7 @@ def create_model():
 
 
 def compile_model(model):
-    model.compile(optimizer='adam', loss=custom_loss)
+    model.compile(optimizer=tf.train.AdamOptimizer(), loss=custom_loss)
 
 
 def create_or_load_model(load_weights_file=None, load_latest=False):
@@ -73,6 +73,7 @@ def create_or_load_model(load_weights_file=None, load_latest=False):
         ckpt_path = './output/ckpt'
         latest_ckpt = tf.train.latest_checkpoint(ckpt_path)
         if latest_ckpt:
+            m.load_weights(latest_ckpt)
             init_epoch = int(latest_ckpt.split('=')[-1].split('.')[0])
     compile_model(m)
     return m, init_epoch
