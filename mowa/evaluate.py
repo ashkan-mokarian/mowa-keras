@@ -4,11 +4,13 @@ import h5py
 import pickle
 
 import tensorflow as tf
+import matplotlib
 import matplotlib.pyplot as plt
 import plotly
 import plotly.tools as tls
 import plotly.offline as py
 import plotly.graph_objs as go
+matplotlib.use('Agg')
 
 from mowa.data import DataInputSequence
 from mowa.model import create_or_load_model

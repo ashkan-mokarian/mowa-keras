@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-data_dir="/home/ashkan/workspace/myCode/MoWA/mowa-keras/data"
 projectdir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 experiments_dir="$projectdir/experiments"
+data_dir="$projectdir/data"
 ID="$(date +"%y%m%d_%H%M%S")"
 
 experiment_name="MoWA-$1-$ID"

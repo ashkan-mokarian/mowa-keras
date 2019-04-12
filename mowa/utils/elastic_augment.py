@@ -74,7 +74,7 @@ def apply_transformation_to_points_with_transforming_to_volume(
     # missing valid nuclei after transformation
     new_cp_volume = augment.apply_transformation(cp_volume, transformation, False)
     new_nuclei_cp = np.vstack([
-        np.average(np.nonzero(new_cp_volume==i+1), axis=1)
+        np.mean(np.nonzero(new_cp_volume==i+1), axis=1)
         if i in valid_nuclei else np.array([0,0,0])
         for i in range(558)])
 
