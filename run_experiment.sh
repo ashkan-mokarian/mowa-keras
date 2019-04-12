@@ -2,12 +2,12 @@
 
 # Settings
 gpu_vis_devices="0"
-virtual_environment="/home/ashkan/.virtualenvs/mowa/bin/activate"
-
-# script assumes data, output, mowa, folders already exist
-if [[ ${virtual_environment} != "" ]]; then
-    source ${virtual_environment}
-fi
+#virtual_environment="/home/ashkan/.virtualenvs/mowa/bin/activate"
+#
+## script assumes data, output, mowa, folders already exist
+#if [[ ${virtual_environment} != "" ]]; then
+#    source ${virtual_environment}
+#fi
 
 # if $projectdir/data does not already exist, then it means it needs data consolidate
 # for now since one has to manually distribute train/test data, lets skip this part
