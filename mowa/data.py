@@ -37,13 +37,14 @@ def _read_input_from_file(file, normalized=True):
             'file': file}
 
 
-def _augment(inputs, normalized=True):
+def _augment(inputs, normalized=True,
+             elastic_augmentation_params=((20, 20, 20), (2., 2., 2.), (0, math.pi / 200.0), 10)):
 
     # Elastic augment
     raw = inputs['raw']
     shape_without_channel = raw.shape[-3:]
     transformation = create_elastic_transformation(
-        shape_without_channel, (20, 20, 20), (2., 2., 2.), (0, math.pi / 200.0), subsample=10)
+        shape_without_channel, *elastic_augmentation_params)
     assert raw.shape[0] == 1
     raw = np.squeeze(raw, axis=0)
     raw = augment.apply_transformation(raw, transformation)
@@ -69,9 +70,7 @@ def _augment(inputs, normalized=True):
     # thrown even for different dilation sizes
     inputs['gt_universe_aligned_nuclei_center'] = nuclei_center_projected
 
-    # Intensity Augment
-
-    # Intensity Scale Shift
+    # Intensity Augment and Scale Shift
 
     return inputs
 

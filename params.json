@@ -1,7 +1,7 @@
 {
-    "max_epoch": 1000,
-    "model_checkpoint_period": 100,
-    "snapshot_period": 100,
+    "max_epoch": 2000,
+    "model_checkpoint_period": 200,
+    "snapshot_period": 200,
     "evaluation_period": 20,
 
     "initializer_worm": "./data/train/mir61L1_1228061.hdf",
