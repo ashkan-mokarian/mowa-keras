@@ -240,14 +240,16 @@ if __name__ == '__main__':
     tf.keras.backend.set_session(tf.Session(config=config))
 
     ckpt_root = './output/ckpt'
-    ckpt_files = [os.path.join(ckpt_root, f.split('.index')[0]) for f in os.listdir(ckpt_root) if os.path.isfile(
-        os.path.join(ckpt_root, f)) and f.endswith('index')]
+    # ckpt_files = [os.path.join(ckpt_root, f.split('.index')[0]) for f in os.listdir(ckpt_root) if os.path.isfile(
+    #     os.path.join(ckpt_root, f)) and f.endswith('index')]
+    ckpt_files = [os.path.join(ckpt_root, f) for f in os.listdir(ckpt_root) if os.path.isfile(
+        os.path.join(ckpt_root, f))]
     create_snapshots_from_ckpts(ckpt_files, snapshot_dir='./output/snapshot')
 
     best_ckpt_root = './output/ckpt/best'
-    ckpt_files = [os.path.join(best_ckpt_root, f.split('.index')[0]) for f in os.listdir(best_ckpt_root) if
+    ckpt_files = [os.path.join(best_ckpt_root, f) for f in os.listdir(best_ckpt_root) if
                   os.path.isfile(
-        os.path.join(best_ckpt_root, f)) and f.endswith('.index')]
+        os.path.join(best_ckpt_root, f))]
     assert len(ckpt_files) == 1
     create_snapshots_from_ckpts(ckpt_files, snapshot_dir='./output/snapshot/best')
 

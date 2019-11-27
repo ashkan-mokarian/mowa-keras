@@ -8,7 +8,7 @@ import numpy as np
 def normalize_raw(raw):
     max_raw = np.max(raw[:])
     min_raw = np.min(raw[:])
-    return (raw - min_raw) / max_raw
+    return (raw - min_raw) / (max_raw - min_raw)
 
 
 def standardize_raw(raw):
@@ -60,8 +60,8 @@ def xyz_to_volume_indices(xyz_point, clip_out_of_bound_to_edge=True):
     def clip(val, min_val, max_val):
         return max(min_val, min(val, max_val))
     if clip_out_of_bound_to_edge:
-        indices = [clip(indices[0], 0, 1166), clip(indices[1], 0, 140),
-                   clip(indices[2], 0, 140)]
+        indices = [clip(indices[0], 0, 1165), clip(indices[1], 0, 139),
+                   clip(indices[2], 0, 139)]
     return indices
 
 

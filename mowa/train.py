@@ -66,8 +66,8 @@ def train(output_dir='./output', params=None):
                         epochs=params.max_epoch,
                         validation_data=val_gen,
                         max_queue_size=40,
-                        workers=20,
-                        use_multiprocessing=True,
+                        workers=10,
+                        use_multiprocessing=False,
                         shuffle=True,
                         callbacks=[checkpointer, best_checkpointer, tensorboarder],
                         initial_epoch=init_epoch)
@@ -83,6 +83,8 @@ if __name__ == '__main__':
     params = Params('./params.json')
     if len(sys.argv) > 1 and sys.argv[1] == '-d':
         params.update('./params_debug.json')
+
+    print(os.environ.keys())
 
     train(params=params)
 

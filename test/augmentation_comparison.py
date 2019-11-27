@@ -3,10 +3,9 @@ import copy
 import h5py
 
 import numpy as np
-import math
 from mowa.data import _read_input_from_file
 from mowa.data import _augment
-from neuroglancer_viewer import add as add_layer
+from test.neuroglancer_viewer import add as add_layer
 from mowa.evaluate import centerpred_to_volume
 import neuroglancer
 

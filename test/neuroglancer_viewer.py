@@ -55,6 +55,7 @@ def main(worm_hdf5_file, worm_name, eval_file):
         add(s, centerpred_labels, 'centerpred_labels')
         add(s, predsvol, 'pred_centerpoints')
         print(viewer)
+
 # embedding.materialize()
 # mi = np.amin(embedding.data)
 # ma = np.amax(embedding.data)
@@ -92,9 +93,9 @@ def main(worm_hdf5_file, worm_name, eval_file):
 
 if __name__ == '__main__':
     # INPUTS
-    wormhdf5file = '/home/ashkan/workspace/myCode/MoWA/mowa-keras/data/train/egl5L1_0606074.hdf'
-    wormname = 'egl5L1_0606074'
-    evalfile = '/home/ashkan/workspace/myCode/MoWA/mowa-keras/output/snapshot/snapshot-1000.pkl'
+    wormhdf5file = '/home/ashkan/workspace/myCode/MoWA/mowa-keras/data/test/eft3RW10035L1_0125073.hdf'
+    wormname = 'eft3RW10035L1_0125073'
+    evalfile = '/home/ashkan/workspace/myCode/MoWA/mowa-keras/experiments/MoWA-dropout_0.5_before_code-190424_183532/output/snapshot/snapshot-1000.pkl'
 
     main(wormhdf5file, wormname, evalfile)
 
