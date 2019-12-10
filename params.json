@@ -3,6 +3,7 @@
     "model_checkpoint_period": 200,
     "snapshot_period": 200,
     "evaluation_period": 20,
+    "batch_size": 2,
 
     "normalize": true,
 
