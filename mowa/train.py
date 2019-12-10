@@ -52,8 +52,8 @@ def train(output_dir='./output', params=None):
     # model.metrics_tensors += [keras.backend.max(layer.output) for layer in model.layers if layer.name in output_layers]
 
     # DATA ==========
-    train_gen = DataInputSequence('./data/train', True, False, 1)
-    val_gen = DataInputSequence('./data/val', False, False, 1)
+    train_gen = DataInputSequence('./data/train', True, params.normalize, 1)
+    val_gen = DataInputSequence('./data/val', False, params.normalize, 1)
     # test_gen = DataInputSequence('./data/test', False, False, 1)
     # train_eval_gen = DataInputSequence('./data/train', False, False, 1)
 

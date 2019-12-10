@@ -33,6 +33,12 @@ def normalize_aligned_worm_nuclei_center_points(points):
     return normalized_points
 
 
+def undo_normalize_aligned_worm_nuclei_center_points(points):
+    assert len(points.shape) <= 2 and points.shape[1] == 1674  # forms include (*, 1674)
+    multiplier = np.tile([1166.0, 140.0, 140.0], [558])
+    return np.multiply(points, multiplier)
+
+
 def standardize_aligned_worm_nuclei_center_points(points):
     if points.shape == (558, 3):
         points = np.reshape(points, (-1,))

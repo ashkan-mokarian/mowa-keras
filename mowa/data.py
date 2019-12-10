@@ -108,5 +108,7 @@ class DataInputSequence(keras.utils.Sequence):
 
 
 if __name__ == '__main__':
-    a = DataInputSequence('./data/train', True, False, 1)
+    a = DataInputSequence('./data/train', True, True, 1)
+    for i in iter(a):
+        print(i)
     print('Finish')

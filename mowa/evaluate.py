@@ -13,17 +13,23 @@ import plotly.graph_objs as go
 matplotlib.use('Agg')
 
 from mowa.data import DataInputSequence
+from mowa.utils.data import undo_normalize_aligned_worm_nuclei_center_points
 from mowa.model import create_or_load_model
 from mowa.utils.evaluate import *
+from mowa.utils.general import Params
 
 
 def create_snapshots_from_ckpts(ckpt_files, snapshot_dir):
     if not os.path.exists(snapshot_dir):
         os.makedirs(snapshot_dir)
-    all_data_gen = DataInputSequence(['./data/train', './data/test', './data/val'], False, False, 1)
+    normalized = Params('./params.json').normalize
+    all_data_gen = DataInputSequence(['./data/train', './data/test', './data/val'], False, normalized, 1)
     for ckpt_file in ckpt_files:
         model, epoch_no = create_or_load_model(load_weights_file=ckpt_file)
         all_data_outputs = model.predict_generator(all_data_gen)
+        # unnormalize the data here if the model works on normalized data
+        if normalized:
+            all_data_outputs = undo_normalize_aligned_worm_nuclei_center_points(all_data_outputs)
         snapshot_file = os.path.join(snapshot_dir, 'snapshot-{}.pkl'.format(epoch_no))
         snapshot = []
         for no, f in enumerate(all_data_gen.file_set):

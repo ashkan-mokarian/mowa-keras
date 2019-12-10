@@ -4,6 +4,8 @@
     "snapshot_period": 200,
     "evaluation_period": 20,
 
+    "normalize": true,
+
     "initializer_worm": "./data/train/mir61L1_1228061.hdf",
 
     "random_seed": 123

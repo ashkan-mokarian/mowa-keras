@@ -7,16 +7,24 @@ import tensorflow as tf
 import tensorflow.keras as keras
 import numpy as np
 
+from mowa.utils.data import normalize_aligned_worm_nuclei_center_points
 from mowa.utils.general import Params
 initializer_worm_file_from_params = Params('./params.json').initializer_worm
 
 
 def custom_loss(y_true, y_pred):
+    weight = tf.cast(tf.greater(y_true, 0), tf.float32)  # don't wanna count the centerpoints, where no annotated
+                                                         # data exists, shown in dataset by 0 values
+    loss = tf.losses.mean_squared_error(y_true, y_pred, weight)
+    return loss
+
+
+def malahanobis_loss(y_true, y_pred):
     weight = tf.cast(tf.greater(y_true, 0), tf.float32)
     # Also consider the malahanobis distance
-    # malahanobis_weights = tf.tile(tf.constant([1166.0, 140.0, 140.0]), [558])
-    # final_weights = tf.multiply(weight, malahanobis_weights)
-    loss = tf.losses.mean_squared_error(y_true, y_pred, weight)
+    malahanobis_weights = tf.tile(tf.constant([1166.0/140.0, 1.0, 1.0]), [558])
+    final_weights = tf.multiply(weight, malahanobis_weights)
+    loss = tf.losses.mean_squared_error(y_true, y_pred, final_weights)
     return loss
 
 
@@ -42,7 +50,10 @@ def model(
     # Initializing the bias with the values of a worm and continue training from there on
     initializer_wormfile = initializer_worm_file_from_params
     with h5py.File(initializer_wormfile, 'r') as f:
-        initializer_array = np.reshape(f['.']['matrix/universe_aligned_nuclei_centers'][()], (-1,)).tolist()
+        initializer_array = f['.']['matrix/universe_aligned_nuclei_centers'][()]
+        if Params('./params.json').normalize:
+            initializer_array = normalize_aligned_worm_nuclei_center_points(initializer_array)
+        initializer_array = np.reshape(initializer_array, (-1,)).tolist()
     initilizer_tensor = keras.initializers.Constant(value=initializer_array)
     m.add(keras.layers.Dense(558*3, bias_initializer=initilizer_tensor,
                              name='gt_universe_aligned_nuclei_center'))
@@ -54,7 +65,11 @@ def create_model():
 
 
 def compile_model(model):
-    model.compile(optimizer=tf.train.AdamOptimizer(), loss=custom_loss)
+    if Params('./params.json').normalize:
+        loss = malahanobis_loss
+    else:
+        loss = custom_loss
+    model.compile(optimizer=tf.train.AdamOptimizer(), loss=loss)
 
 
 def create_or_load_model(load_weights_file=None, load_latest=False):
@@ -85,7 +100,7 @@ if __name__ == '__main__':
     config.gpu_options.allow_growth = True
     tf.keras.backend.set_session(tf.Session(config=config))
 
-    m , epoch = create_or_load_model(load_weights_file='/home/ashkan/workspace/myCode/MoWA/mowa-keras/output/last_weights-epoch=200.hdf5',load_latest=False)
+    m , epoch = create_or_load_model(load_weights_file=False,load_latest=False)
     print(epoch)
     print(m.layers[-1].get_weights()[1])
     print('Finish')
