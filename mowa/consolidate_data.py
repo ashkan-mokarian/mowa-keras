@@ -27,7 +27,10 @@ val_dataset_worm_names = [
     'unc54L1_0123071',
     'unc54L1_0123072'
     ]
-use_fixed_split = False
+use_fixed_split = False  # Be careful with this parameter, sometimes you might run evaluation on a different system
+# than training and still not sure if the names are explicetely checked, or just the default order is assumed.
+# CAUTION: not sure about setting it False. might cause problem when training on one machine and mybe evaluating on
+# another one, which is sometimes part of the workflow. however the fixed seed is dealing with this issue.
 
 
 def to_array(filename):

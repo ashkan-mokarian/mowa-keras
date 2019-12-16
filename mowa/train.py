@@ -84,6 +84,11 @@ if __name__ == '__main__':
     if len(sys.argv) > 1 and sys.argv[1] == '-d':
         params.update('./params_debug.json')
 
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["OPENBLAS_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+    os.environ["NUMEXPR_NUM_THREADS"] = "1"
     print(os.environ.keys())
 
     train(params=params)
