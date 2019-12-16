@@ -241,6 +241,12 @@ def plot_hit_statistics(snapshot_list=None):
 
 
 if __name__ == '__main__':
+    os.environ["OMP_NUM_THREADS"] = "1"
+    os.environ["OPENBLAS_NUM_THREADS"] = "1"
+    os.environ["MKL_NUM_THREADS"] = "1"
+    os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
+    os.environ["NUMEXPR_NUM_THREADS"] = "1"
+
     config = tf.ConfigProto()
     config.gpu_options.allow_growth = True
     tf.keras.backend.set_session(tf.Session(config=config))

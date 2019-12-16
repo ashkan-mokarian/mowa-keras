@@ -22,7 +22,7 @@ def custom_loss(y_true, y_pred):
 def malahanobis_loss(y_true, y_pred):
     weight = tf.cast(tf.greater(y_true, 0), tf.float32)
     # Also consider the malahanobis distance
-    malahanobis_weights = tf.tile(tf.constant([1166.0/140.0, 1.0, 1.0]), [558])
+    malahanobis_weights = tf.tile(tf.constant([(1166.0/140.0)**2, 1.0, 1.0]), [558])
     final_weights = tf.multiply(weight, malahanobis_weights)
     loss = tf.losses.mean_squared_error(y_true, y_pred, final_weights)
     return loss
@@ -86,8 +86,15 @@ def create_or_load_model(load_weights_file=None, load_latest=False):
     if load_latest:
         # check in the default path
         ckpt_path = './output/ckpt'
-        latest_ckpt = tf.train.latest_checkpoint(ckpt_path)
-        if latest_ckpt:
+        # latest_ckpt = tf.train.latest_checkpoint(ckpt_path)
+        # for some reason, the recent version of tensorflow does not support the old way of gettgin latest
+        # checkpoint, but I also needed tf 1.4 for compatibility on cluster, hence need to find latest checkpoint
+        # manually
+        ckpts = [file for file in os.listdir(ckpt_path) if re.match(epoch_finder_regex, file)]
+        ckpts.sort(key=lambda x: int(re.findall(epoch_finder_regex, x)[0]))
+
+        if ckpts:
+            latest_ckpt = os.path.join(ckpt_path, ckpts[-1])
             m.load_weights(latest_ckpt)
             init_epoch = int(latest_ckpt.split('=')[-1].split('.')[0])
     compile_model(m)
@@ -100,7 +107,7 @@ if __name__ == '__main__':
     config.gpu_options.allow_growth = True
     tf.keras.backend.set_session(tf.Session(config=config))
 
-    m , epoch = create_or_load_model(load_weights_file=False,load_latest=False)
+    m , epoch = create_or_load_model(load_weights_file=None,load_latest=True)
     print(epoch)
     print(m.layers[-1].get_weights()[1])
     print('Finish')
