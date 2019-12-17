@@ -1,6 +1,6 @@
 import os
 import logging
-logging.getLogger(__name__)
+# logging.getLogger(__name__)
 
 import numpy as np
 
@@ -53,6 +53,7 @@ def undo_normalize_standardize_aligned_worm_nuclei_center_points(points):
     # heuristically check if unnormalization is valid
     # assert np.mean(points[:]) < 1
     if np.mean(points[:]) < 1:
+        logging.getLogger(__name__)
         logging.debug('decided that centerpoint are normalized with np.mean('
                       'points[:]) < 1')
         points = np.multiply(points, np.array([1166., 140., 140.]))

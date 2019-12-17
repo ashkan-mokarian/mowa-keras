@@ -6,7 +6,7 @@ env
 #$ -V
 #$ -e error_log_$JOB_ID
 #$ -o out_log_$JOB_ID
-#$ -l h_rt=110:00:00
+#$ -l h_rt=96:00:00
 
 ./run_experiment.sh "$@"
 retVal=$?
