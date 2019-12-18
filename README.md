@@ -28,6 +28,14 @@ easily edit whatever needed to make some changes to the model.
 after these steps, a $experimentdir/output directory should be created, where different outputs of the model together
  with some default analysis plots should exist.
 
+### HINTS:
+- if the per epoch training is too slow, one way of making it faster is to remove the best model checkpointing
+ callbacks in train.py since:
+    - there is no burn-in implemented in training
+    - two model checkpointing call backs are called for each epoch (val_loss and val_mala_mae_metric) which get
+  trigerred almost every step, especially in the 300/400 starting epochs (However I am not sure yet if a background
+   worker takes care of it implicitely or not, but from debugging observations, they add apprx. 2 3 secs)
+
 ### BUGS:
 - might leave gpu memory allocated without showing any process in 'nvidia-smi' output. try `sudo fuser -v 
 /dev/nvidia*` and look for python process running. then `sudo kill -9 $PID`.

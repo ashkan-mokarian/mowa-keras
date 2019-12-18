@@ -27,6 +27,13 @@ def malahanobis_loss(y_true, y_pred):
     loss = tf.losses.mean_squared_error(y_true, y_pred, final_weights)
     return loss
 
+def mala_mae_metric(y_true, y_pred):
+    weight = tf.cast(tf.greater(y_true, 0), tf.float32)
+    malahanobis_weights = tf.tile(tf.constant([1166.0 / 140.0, 1.0, 1.0]), [558])
+    final_weights = tf.multiply(weight, malahanobis_weights)
+    abs_diff = tf.abs(y_true - y_pred)
+    mala_abs_diff = tf.multiply(abs_diff, final_weights)
+    return tf.reduce_mean(mala_abs_diff)
 
 def model(
         num_fmaps,
@@ -69,7 +76,7 @@ def compile_model(model):
         loss = malahanobis_loss
     else:
         loss = custom_loss
-    model.compile(optimizer=tf.train.AdamOptimizer(), loss=loss)
+    model.compile(optimizer=tf.train.AdamOptimizer(), loss=loss, metrics=[mala_mae_metric])
 
 
 def create_or_load_model(load_weights_file=None, load_latest=False):
@@ -98,6 +105,10 @@ def create_or_load_model(load_weights_file=None, load_latest=False):
             m.load_weights(latest_ckpt)
             init_epoch = int(latest_ckpt.split('=')[-1].split('.')[0])
     compile_model(m)
+    if init_epoch == 0 and load_weights_file:
+        #  doing this bcuz: assuming that this only happens when evaluating, and since more best_weights_models have
+        #  been added, somehow need to compensate for this, with a bad workaround
+        init_epoch = {'init_epoch': init_epoch, 'helper_name': load_weights_file.split('.')[-2].split('/')[-1]}
     return m, init_epoch
 
 

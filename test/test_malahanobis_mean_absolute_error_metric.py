@@ -1,4 +1,4 @@
-from mowa.model import malahanobis_loss
+from mowa.model import mala_mae_metric
 import tensorflow as tf
 import numpy as np
 
@@ -13,25 +13,24 @@ if __name__ == '__main__':
     a_true = np.ones([1,1674])
     a_pred = np.zeros([1,1674])
 
-    b_true = np.concatenate((np.array([3,2,1]), np.ones([1671,])))
+    b_true = np.concatenate((np.array([3,0,1]), np.ones([1671,])))
     b_true = np.expand_dims(b_true,axis=0)
     b_pred = np.concatenate((np.array([0, 2, 3]), np.ones([1671, ])))
     b_pred = np.expand_dims(b_pred, axis=0)
     with tf.Graph().as_default():
         y_true = tf.placeholder(tf.float32, (BATCH_SIZE,)+(1674,), name='y_true')
         y_pred = tf.placeholder(tf.float32, (BATCH_SIZE,)+(1674,), name='y_pred')
-        loss = malahanobis_loss(y_true, y_pred)
 
         sess = tf.Session()
         sess.run(tf.global_variables_initializer())
 
-        loss_val = sess.run([loss], feed_dict={'y_true:0': a_true,
-                                               'y_pred:0': a_pred})
+        metric_val = sess.run([mala_mae_metric(y_true, y_pred)], feed_dict={'y_true:0': a_true,
+                                               'y_pred:0': a_pred})  # should be 3.4428
 
-        loss2 = tf.losses.mean_squared_error(y_true, y_pred)
-        loss2_val = sess.run([loss2], feed_dict={'y_true:0': a_true,
-                                                 'y_pred:0': a_pred})
+        # Should be 0.01612.. . Note that, this metric considers the 0 values in y_true, in order to discard the
+        # unknown points, however, it divides by the total which is 1674 and not like the loss by the known points
+        metric_val2 = sess.run([mala_mae_metric(y_true, y_pred)], feed_dict={'y_true:0': b_true,
+                                                                             'y_pred:0': b_pred})
 
-        loss3_val = sess.run([loss], feed_dict={'y_true:0': b_true,
-                                               'y_pred:0': b_pred})  # Must be 0.3753, bcuz 9*(1166/140)^2 + 4 / 1674
-    print(loss_val)
+        print('finsih')
+    print(metric_val)

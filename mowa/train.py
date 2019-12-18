@@ -24,12 +24,21 @@ def train(output_dir='./output', params=None):
         save_weights_only=True,
         period=params.model_checkpoint_period)
     # NOTE: Best checkpointing, if resumed, is buggy as it resets the val_loss to inf and not its previous best resut
-    best_ckpt_path = './output/ckpt/best/best_weights.hdf5'
+    best_ckpt_path = './output/ckpt/best/best_weights-val_loss.hdf5'
     best_checkpointer = keras.callbacks.ModelCheckpoint(
         filepath= best_ckpt_path,
         verbose=1,
         save_weights_only=True,
         monitor='val_loss',
+        save_best_only=True
+        )
+
+    best_ckpt_path = './output/ckpt/best/best_weights-val_mala_mae_metric.hdf5'
+    best_checkpointer_mae = keras.callbacks.ModelCheckpoint(
+        filepath=best_ckpt_path,
+        verbose=1,
+        save_weights_only=True,
+        monitor='val_mala_mae_metric',
         save_best_only=True
         )
     for p in [ckpt_path, best_ckpt_path]:
@@ -69,7 +78,7 @@ def train(output_dir='./output', params=None):
                         workers=10,
                         use_multiprocessing=False,
                         shuffle=True,
-                        callbacks=[checkpointer, best_checkpointer, tensorboarder],
+                        callbacks=[checkpointer, best_checkpointer, tensorboarder, best_checkpointer_mae],
                         initial_epoch=init_epoch)
 
 

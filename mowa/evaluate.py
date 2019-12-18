@@ -31,7 +31,11 @@ def create_snapshots_from_ckpts(ckpt_files, snapshot_dir):
         # unnormalize the data here if the model works on normalized data
         if normalized:
             all_data_outputs = undo_normalize_aligned_worm_nuclei_center_points(all_data_outputs)
-        snapshot_file = os.path.join(snapshot_dir, 'snapshot-{}.pkl'.format(epoch_no))
+        if isinstance(epoch_no, int):
+            snapshot_file = os.path.join(snapshot_dir, 'snapshot-{}.pkl'.format(epoch_no))
+        elif isinstance(epoch_no, dict):
+            snapshot_file = os.path.join(snapshot_dir, 'snapshot-{}-{}.pkl'.format(epoch_no['helper_name'],
+                                                                                   epoch_no['init_epoch']))
         snapshot = []
         for no, f in enumerate(all_data_gen.file_set):
             snapshot.append({'file': f, 'output': all_data_outputs[no].squeeze()})
@@ -328,7 +332,7 @@ if __name__ == '__main__':
     ckpt_files = [os.path.join(best_ckpt_root, f) for f in os.listdir(best_ckpt_root) if
                   os.path.isfile(
         os.path.join(best_ckpt_root, f))]
-    assert len(ckpt_files) == 1
+    # assert len(ckpt_files) == 1
     create_snapshots_from_ckpts(ckpt_files, snapshot_dir='./output/snapshot/best')
 
     # CPK plot for all snapshots in one experiment
@@ -338,9 +342,10 @@ if __name__ == '__main__':
     best_snapshot_dir = './output/snapshot/best'
     best_snapshot = [os.path.join(best_snapshot_dir, f) for f in os.listdir(
             best_snapshot_dir)]
-    assert len(best_snapshot) == 1
-    best_snapshot = best_snapshot[0]
-    plot_dist_stat_per_nucleus(best_snapshot)
+    # assert len(best_snapshot) == 1
+    # best_snapshot = best_snapshot[0]
+    for best_snap in best_snapshot:
+        plot_dist_stat_per_nucleus(best_snap)
 
     # ACCURACY
     plot_hit_statistics()
