@@ -5,11 +5,11 @@ import re
 
 import tensorflow as tf
 import tensorflow.keras as keras
+from tensorflow.keras.regularizers import l1_l2
 import numpy as np
 
 from mowa.utils.data import normalize_aligned_worm_nuclei_center_points
 from mowa.utils.general import Params
-initializer_worm_file_from_params = Params('./params.json').initializer_worm
 
 
 def custom_loss(y_true, y_pred):
@@ -27,6 +27,7 @@ def malahanobis_loss(y_true, y_pred):
     loss = tf.losses.mean_squared_error(y_true, y_pred, final_weights)
     return loss
 
+
 def mala_mae_metric(y_true, y_pred):
     weight = tf.cast(tf.greater(y_true, 0), tf.float32)
     malahanobis_weights = tf.tile(tf.constant([1166.0 / 140.0, 1.0, 1.0]), [558])
@@ -35,35 +36,41 @@ def mala_mae_metric(y_true, y_pred):
     mala_abs_diff = tf.multiply(abs_diff, final_weights)
     return tf.reduce_mean(mala_abs_diff)
 
+
 def model(
         num_fmaps,
         fmap_inc_factor,
         downsample_factors,
         activation='relu', **kwargs):
 
+    params = Params('./params.json')
+    l2_wrc = params.l2_weight_regularization_coefficient
+    l1_wrc = params.l1_weight_regularization_coefficient
+
     m = keras.Sequential()
     m.add(keras.layers.InputLayer(input_shape=(1, 1166, 140, 140), name='raw'))
 
     for layer in range(len(downsample_factors)):
-        m.add(keras.layers.Conv3D(num_fmaps*fmap_inc_factor**layer, kernel_size=3, data_format='channels_first', activation=activation))
-        m.add(keras.layers.Conv3D(num_fmaps*fmap_inc_factor**layer, kernel_size=3, data_format='channels_first', activation=activation))
+        m.add(keras.layers.Conv3D(num_fmaps*fmap_inc_factor**layer, kernel_size=3, data_format='channels_first',
+                                  activation=activation, kernel_regularizer=l1_l2(l1=l1_wrc, l2=l2_wrc)))
+        m.add(keras.layers.Conv3D(num_fmaps*fmap_inc_factor**layer, kernel_size=3, data_format='channels_first',
+                                  activation=activation, kernel_regularizer=l1_l2(l1=l1_wrc, l2=l2_wrc)))
 
         # downsample
         m.add(keras.layers.MaxPooling3D(pool_size=downsample_factors[layer], strides=downsample_factors[layer], data_format='channels_first'))
 
     m.add(keras.layers.Flatten(data_format='channels_first'))
-    m.add(keras.layers.Dense(20))
+    m.add(keras.layers.Dense(20, kernel_regularizer=l1_l2(l1=l1_wrc, l2=l2_wrc)))
 
     # Initializing the bias with the values of a worm and continue training from there on
-    initializer_wormfile = initializer_worm_file_from_params
-    with h5py.File(initializer_wormfile, 'r') as f:
+    with h5py.File(params.initializer_worm, 'r') as f:
         initializer_array = f['.']['matrix/universe_aligned_nuclei_centers'][()]
         if Params('./params.json').normalize:
             initializer_array = normalize_aligned_worm_nuclei_center_points(initializer_array)
         initializer_array = np.reshape(initializer_array, (-1,)).tolist()
     initilizer_tensor = keras.initializers.Constant(value=initializer_array)
     m.add(keras.layers.Dense(558*3, bias_initializer=initilizer_tensor,
-                             name='gt_universe_aligned_nuclei_center'))
+                             name='gt_universe_aligned_nuclei_center', kernel_regularizer=l1_l2(l1=l1_wrc, l2=l2_wrc)))
     return m
 
 

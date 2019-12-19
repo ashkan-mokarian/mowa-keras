@@ -6,8 +6,9 @@
     "batch_size": 2,
 
     "normalize": true,
-
     "initializer_worm": "./data/train/mir61L1_1228061.hdf",
+    "l2_weight_regularization_coefficient": 0.01,
+    "l1_weight_regularization_coefficient": 0.0,
 
     "random_seed": 123
 }
