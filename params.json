@@ -2,10 +2,12 @@
     "max_epoch": 2000,
     "model_checkpoint_period": 200,
     "snapshot_period": 200,
-    "evaluation_period": 20,
+    "evaluation_period": 1,
     "batch_size": 2,
 
     "normalize": true,
+    "lr": 0.0001,
+    "densestlayer_dropout_rate": 0.5,
     "initializer_worm": "./data/train/mir61L1_1228061.hdf",
     "l2_weight_regularization_coefficient": 0.01,
     "l1_weight_regularization_coefficient": 0.0,

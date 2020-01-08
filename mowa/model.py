@@ -61,6 +61,7 @@ def model(
 
     m.add(keras.layers.Flatten(data_format='channels_first'))
     m.add(keras.layers.Dense(20, kernel_regularizer=l1_l2(l1=l1_wrc, l2=l2_wrc)))
+    m.add(keras.layers.Dropout(rate=params.densestlayer_dropout_rate))
 
     # Initializing the bias with the values of a worm and continue training from there on
     with h5py.File(params.initializer_worm, 'r') as f:
@@ -79,11 +80,12 @@ def create_model():
 
 
 def compile_model(model):
-    if Params('./params.json').normalize:
+    params = Params('./params.json')
+    if params.normalize:
         loss = malahanobis_loss
     else:
         loss = custom_loss
-    model.compile(optimizer=tf.train.AdamOptimizer(), loss=loss, metrics=[mala_mae_metric])
+    model.compile(optimizer=tf.train.AdamOptimizer(learning_rate=params.lr), loss=loss, metrics=[mala_mae_metric])
 
 
 def create_or_load_model(load_weights_file=None, load_latest=False):
