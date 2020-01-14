@@ -59,9 +59,14 @@ def model(
         # downsample
         m.add(keras.layers.MaxPooling3D(pool_size=downsample_factors[layer], strides=downsample_factors[layer], data_format='channels_first'))
 
-    m.add(keras.layers.Flatten(data_format='channels_first'))
-    m.add(keras.layers.Dense(20, kernel_regularizer=l1_l2(l1=l1_wrc, l2=l2_wrc)))
-    m.add(keras.layers.Dropout(rate=params.densestlayer_dropout_rate))
+    # Changes regarding params.final_coding_layer that should be either global_average_pooling or dense, for backward
+    # compatibility using else for dense
+    if params.final_coding_layer == 'global_average_pooling':
+        m.add(keras.layers.GlobalAveragePooling3D(data_format='channels_first'))
+    else:
+        m.add(keras.layers.Flatten(data_format='channels_first'))
+        m.add(keras.layers.Dense(20, kernel_regularizer=l1_l2(l1=l1_wrc, l2=l2_wrc)))
+        m.add(keras.layers.Dropout(rate=params.densestlayer_dropout_rate))
 
     # Initializing the bias with the values of a worm and continue training from there on
     with h5py.File(params.initializer_worm, 'r') as f:

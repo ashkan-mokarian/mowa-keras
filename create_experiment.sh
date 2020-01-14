@@ -18,10 +18,8 @@ cd $experiment_dir
 
 mkdir mowa
 mkdir output
-mkdir test
 ln -s $data_dir data
 cp -a $projectdir/mowa/. ./mowa/
-cp -a $projectdir/test/. ./test/
 cp $projectdir/*.sh ./
 cp $projectdir/params.json ./
 cp $projectdir/model_description.txt ./

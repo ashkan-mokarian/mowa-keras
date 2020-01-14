@@ -11,6 +11,7 @@
     "initializer_worm": "./data/train/mir61L1_1228061.hdf",
     "l2_weight_regularization_coefficient": 0.01,
     "l1_weight_regularization_coefficient": 0.0,
+    "final_coding_layer": "global_average_pooling",
 
     "random_seed": 123
 }
